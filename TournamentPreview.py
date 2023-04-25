@@ -52,6 +52,7 @@ def getEvents(session, tournament_slug: str) -> dict:
       videogame {
         name
       }
+      name
     }
     }
     }
@@ -63,7 +64,7 @@ def getEvents(session, tournament_slug: str) -> dict:
 
     result = session.execute(q, variable_values=params)
     for event in result['tournament']['events']:
-        event_dict[event['id']] = event['videogame']['name']
+        event_dict[event['id']] = (event['videogame']['name'],event['name'])
 
     return event_dict
 
@@ -157,8 +158,11 @@ def generateEventPreview(player_dict: dict, discriminator_list: list, num_seeds:
     # gather top players based on seeding or list of notable players
     top_players = []
     for p in player_dict:
-        if p in discriminator_list or player_dict[p]['seed'] <= num_seeds:
+        if p in discriminator_list:
             top_players.append(player_dict[p])
+        elif player_dict[p]['seed'] != None:
+            if player_dict[p]['seed'] <= num_seeds:
+                top_players.append(player_dict[p])
 
     # sort them by seed for printing (not sure if it should work like this)
     top_players = sorted(top_players, key=lambda d: d['seed'])
@@ -168,9 +172,9 @@ def generateEventPreview(player_dict: dict, discriminator_list: list, num_seeds:
         prefix = player['prefix']
         tag = player['tag']
         if prefix:
-            print(prefix + "|" + tag, end=',')
+            print(prefix + "|" + tag, end=', ')
         else:
-            print(tag, end=",")
+            print(tag, end=", ")
 
     # start a new line for the next game
     print("")
@@ -250,7 +254,7 @@ def main():
         else:
             event_dict = getEvents(session, link)
             for event in event_dict:
-                print(event_dict[event])
+                print(event_dict[event][0] + " - " + event_dict[event][1])
                 players = getEventPlayers(session, event, ds)
                 generateEventPreview(
                     players, discriminator_list, int(args.seeds))
