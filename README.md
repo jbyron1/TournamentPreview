@@ -1,7 +1,9 @@
 # TournamentPreview
 Generate list of notable players for each game
 
-example usage: ```python TournamentPreview.py https://start.gg/tournament/texas-showdown-2023 example_discriminators.txt --seeds 16```
+example usage: 
+
+```python TournamentPreview.py https://start.gg/tournament/texas-showdown-2023 example_discriminators.txt --seeds 16```
 
 Can be used to get an entire tournament or just a single game, accepted formats include:
 
